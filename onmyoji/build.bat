@@ -1,0 +1,1 @@
+pyinstaller.exe --uac-admin -w -i fun.ico _run.py
