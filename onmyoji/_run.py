@@ -14,7 +14,7 @@ from mouseCtrl import *
 gui = Tk()
 gui.title('阴阳师脚本-1.2')
 gui.geometry('260x400')
-gui.iconbitmap('ssr.ico')
+gui.iconbitmap('images/ssr.ico')
 mode = IntVar()
 if_full = IntVar()
 _title = '阴阳师-网易游戏'
@@ -105,7 +105,7 @@ def threadscan():
             im_find_click(im_tick, 0.8, '“钩钩”')
             im_find_click(im_confirm, 0.8, '“确定”')
             im_find_click(im_create, 0.8, '“创建”')
-            im_find_click(im_accept, 0.6, '“接受悬赏封印”')
+            im_find_click(im_accept, 0.95, '“接受悬赏封印”')
             
         elif mode.get() == 2:
             lab.config(text="扫描中...")
@@ -115,7 +115,7 @@ def threadscan():
             im_find_click(im_hard, 0.8, '“困难章节”')
             im_find_click(im_boss, 0.6, '“头目”')
             im_find_click(im_tick, 0.8, '“钩钩”')
-            im_find_click(im_accept, 0.6, '“接受悬赏封印”')
+            im_find_click(im_accept, 0.95, '“接受悬赏封印”')
             if im_find_click(im_chest, 0.8, '“宝箱”'):
                 time.sleep(3)
                 mouse_left_click_return(get_pos(_title)[0] + 100, get_pos(_title)[1] + 100)
@@ -128,7 +128,7 @@ def threadscan():
             im_find_click(im_prepare, 0.6, '“准备”')
             im_find_click(im_continue, 0.6, '“点击屏幕继续”')
             im_find_click(im_challenge, 0.6, '“挑战”')
-            im_find_click(im_accept, 0.6, '“接受悬赏封印”')
+            im_find_click(im_accept, 0.95, '“接受悬赏封印”')
         
         elif mode.get() == 4:
             lab.config(text="扫描中...")
@@ -137,7 +137,7 @@ def threadscan():
             im_find_click(im_adventure, 0.7, '“探索”')
             im_find_click(im_hard, 0.8, '“困难章节”')
             im_find_click(im_boss, 0.6, '“头目”')
-            im_find_click(im_accept, 0.6, '“接受悬赏封印”')
+            im_find_click(im_accept, 0.95, '“接受悬赏封印”')
             if im_find_click(im_chest, 0.8, '“宝箱”'):
                 time.sleep(3)
                 mouse_left_click_return(get_pos(_title)[0] + 100, get_pos(_title)[1] + 100)
