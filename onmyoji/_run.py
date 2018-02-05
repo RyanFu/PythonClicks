@@ -6,22 +6,25 @@ import time
 import numpy
 import win32api
 import thread
+import random
 from Tkinter import *
 from getHandle import *
 from mouseCtrl import *
 
 gui = Tk()
-gui.title('阴阳师脚本-1.0')
-gui.geometry('260x350')
+gui.title('阴阳师脚本-1.2')
+gui.geometry('260x400')
+gui.iconbitmap('ssr.ico')
 mode = IntVar()
 if_full = IntVar()
-sleep_time = 0.4
 _title = '阴阳师-网易游戏'
-MODES = [(' 组队御魂觉醒  ', 1),
-         ('   单刷探索    ', 2),
-         (' 单刷御魂觉醒  ', 3),
-         ('    暂停     ', 256)]
+MODES = [(' 组队-御魂觉醒 ', 1),
+         ('   组队-探索   ', 2),
+         (' 单刷_御魂觉醒 ', 3),
+         ('   单刷_探索   ', 4),
+         ('    <暂停>     ', 256)]
 
+im_accept = cv2.imread('images/accept.png')
 im_adventure = cv2.imread('images/adventure.png')
 im_all = cv2.imread('images/all.png')
 im_begin = cv2.imread('images/begin.png')
@@ -36,6 +39,7 @@ im_hard = cv2.imread('images/hard.png')
 im_invite = cv2.imread('images/invite.png')
 im_kill = cv2.imread('images/kill.png')
 im_prepare = cv2.imread('images/prepare.png')
+im_team = cv2.imread('images/team.png')
 im_tick = cv2.imread('images/tick.png')
 
 
@@ -91,41 +95,61 @@ def threadscan():
         if mode.get() == 1:
             lab.config(text='扫描中...')
             if im_find(im_invite, 0.65, '“邀请”'):
-                time.sleep(sleep_time)
                 if if_full.get() == 1:
                     continue
-            im_find_click(im_all, 0.99, '“所有人”')
-            im_find_click(im_default, 0.99, '“默认邀请队友”')
-            im_find_click(im_begin, 0.99, '“开始战斗”')
+            im_find_click(im_all, 0.8, '“所有人”')
+            im_find_click(im_default, 0.8, '“默认邀请队友”')
+            im_find_click(im_begin, 0.8, '“开始战斗”')
             im_find_click(im_prepare, 0.80, '“准备”')
             im_find_click(im_continue, 0.60, '“点击屏幕继续”')
-            im_find_click(im_tick, 0.99, '“钩钩”')
-            im_find_click(im_confirm, 0.99, '“确定”')
-            im_find_click(im_create, 0.99, '“创建”')
+            im_find_click(im_tick, 0.8, '“钩钩”')
+            im_find_click(im_confirm, 0.8, '“确定”')
+            im_find_click(im_create, 0.8, '“创建”')
+            im_find_click(im_accept, 0.6, '“接受悬赏封印”')
+            
         elif mode.get() == 2:
+            lab.config(text="扫描中...")
+            im_find_click(im_prepare, 0.6, '“准备”')
+            im_find_click(im_continue, 0.6, '“点击屏幕继续”')
+            im_find_click(im_team, 0.7, '“组队”')
+            im_find_click(im_hard, 0.8, '“困难章节”')
+            im_find_click(im_boss, 0.6, '“头目”')
+            im_find_click(im_tick, 0.8, '“钩钩”')
+            im_find_click(im_accept, 0.6, '“接受悬赏封印”')
+            if im_find_click(im_chest, 0.8, '“宝箱”'):
+                time.sleep(3)
+                mouse_left_click_return(get_pos(_title)[0] + 100, get_pos(_title)[1] + 100)
+            if not im_find_click(im_kill, 0.6, '“小怪”'):
+                mouse_left_click_return(get_pos(_title)[0] + 820, get_pos(_title)[1] + 370)
+                pass
+        
+        elif mode.get() == 3:
+            lab.config(text="扫描中...")
+            im_find_click(im_prepare, 0.6, '“准备”')
+            im_find_click(im_continue, 0.6, '“点击屏幕继续”')
+            im_find_click(im_challenge, 0.6, '“挑战”')
+            im_find_click(im_accept, 0.6, '“接受悬赏封印”')
+        
+        elif mode.get() == 4:
             lab.config(text="扫描中...")
             im_find_click(im_prepare, 0.6, '“准备”')
             im_find_click(im_continue, 0.6, '“点击屏幕继续”')
             im_find_click(im_adventure, 0.7, '“探索”')
             im_find_click(im_hard, 0.8, '“困难章节”')
             im_find_click(im_boss, 0.6, '“头目”')
+            im_find_click(im_accept, 0.6, '“接受悬赏封印”')
             if im_find_click(im_chest, 0.8, '“宝箱”'):
                 time.sleep(3)
                 mouse_left_click_return(get_pos(_title)[0] + 100, get_pos(_title)[1] + 100)
             if not im_find_click(im_kill, 0.6, '“小怪”'):
-                mouse_left_click_return(get_pos(_title)[0] + 610, get_pos(_title)[1] + 370)
+                mouse_left_click_return(get_pos(_title)[0] + 820, get_pos(_title)[1] + 370)
                 pass
-        elif mode.get() == 3:
-            lab.config(text="扫描中...")
-            im_find_click(im_prepare, 0.6, '“准备”')
-            im_find_click(im_continue, 0.6, '“点击屏幕继续”')
-            im_find_click(im_challenge, 0.6, '“挑战”')
+        
         else:
             lab.config(text="<暂停>")
-        time.sleep(sleep_time)
+        time.sleep(random.uniform(0.5, 0.7))
 
-
-lab = Label(gui, text="initializing...", height=5, width=40, fg="brown")
+lab = Label(gui, text="initializing...", height=4, width=40, fg="brown")
 lab.pack()
 Checkbutton(gui, text='是否等待满员', variable=if_full).pack()
 for name, val in MODES:

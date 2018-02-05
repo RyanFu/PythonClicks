@@ -1,5 +1,7 @@
 import win32api
 import win32con
+import random
+import time
 from ctypes import *
 
 
@@ -26,7 +28,10 @@ def mouse_left_click(x=None, y=None):
 
 def mouse_left_click_return(x=None, y=None):
     rawposition = get_mouse_point()
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
     if not x is None and not y is None:
+        x = x+random.randint(-9, 9)
+        y = y+random.randint(-5, 5)
         mouse_move(x, y)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
@@ -44,7 +49,4 @@ def mouse_wheeldown():
     pass
     #win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -1) ############################
     #win32api.mouse_event/(win32con.MOUSEEVENTF_WHEEL, 1158, 518, -120)
-
-
-
 
