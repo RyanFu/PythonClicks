@@ -14,7 +14,7 @@ from Tkinter import *
 from tkinter import ttk 
 
 gui = Tk()
-gui.title('阴阳师脚本-2.0')
+gui.title('阴阳师脚本-2.1')
 gui.geometry('250x450')
 gui.iconbitmap('images/ssr.ico')
 mode = IntVar()
@@ -43,6 +43,7 @@ im_hall2team = cv2.imread('images/hall2team.png')
 im_hard = cv2.imread('images/hard.png')
 im_invite = cv2.imread('images/invite.png')
 im_kill = cv2.imread('images/kill.png')
+im_manual = cv2.imread('images/manual.png')
 im_prepare = cv2.imread('images/prepare.png')
 im_refresh = cv2.imread('images/refresh.png')
 im_rihe = cv2.imread('images/rihe.png')
@@ -64,6 +65,8 @@ def poweroff():
         os.popen('shutdown -s -t 10800')
     elif shut_time.get()==u'四小时后':
         os.popen('shutdown -s -t 14400')
+    elif shut_time.get()==u'六小时后':
+        os.popen('shutdown -s -t 21600')
 def cancel():
     os.popen('shutdown -a')
 
@@ -174,6 +177,7 @@ def threadscan():
             im_find_click(im_continue, 0.7, '“点击屏幕继续”')
             im_find_click(im_challenge, 0.7, '“挑战”')
             im_find_click(im_fight, 0.7, '“战”')
+            im_find_click(im_manual, 0.7, '“手动->自动”')
             im_find_click(im_attack, 0.7, '“进攻”')
             im_find_click(im_accept, 0.9, '“接受”')
         
@@ -204,12 +208,22 @@ def threadscan():
             elif mob.get()==u'小松丸':
                 im_find_click_offset(im_songwan, 0.7, '“小松丸”', 420, 10)    
             elif mob.get()==u'二口女':
-                im_find_click_offset(im_erkou, 0.7, '“二口女”', 420, 10)    
+                im_find_click_offset(im_erkou, 0.7, '“二口女”', 420, 10)
+            elif mob.get()==u'以上全部':
+                im_find_click_offset(im_rihe, 0.7, '“日和坊”', 420, 10)
+                im_find_click_offset(im_haifang, 0.7, '“海坊主”', 420, 10)
+                im_find_click_offset(im_guishi, 0.7, '“鬼使黑”', 420, 10)
+                im_find_click_offset(im_tiaotiao, 0.7, '“跳跳哥哥”', 415, 10)
+                im_find_click_offset(im_songwan, 0.7, '“小松丸”', 420, 10)
+                im_find_click_offset(im_erkou, 0.7, '“二口女”', 420, 10)
+            im_find_click(im_yaoqi, 0.8, u'“妖气封印”')
             im_find_click(im_refresh, 0.7, '“刷新”')
             im_find_click(im_prepare, 0.7, '“准备”')
-            im_find_click(im_continue, 0.7, '“点击屏幕继续”')
-            im_find_click(im_hall2team, 0.7, '“组队”')
-            im_find_click(im_yaoqi, 0.998, u'“妖气封印”')
+            im_find_click(im_continue, 0.7, '“点击屏幕继续”')  
+            if im_find_click(im_hall2team, 0.7, '“组队大厅”'):
+                time.sleep(0.7)
+                mouse_drag(get_pos(_title)[0] + 200, get_pos(_title)[1] + 500, \
+                            get_pos(_title)[0] + 200, get_pos(_title)[1] + 400)
             
         else:
             lab.config(text="<暂停>")
@@ -217,42 +231,44 @@ def threadscan():
 
         
 ########################################################################
-lab = Label(gui, text="initializing...", font='Arial -12 bold', fg="brown")
+lab = Label(gui, text="initializing...", font='幼圆 -14 bold', fg="brown")
 lab.place(relx=0.1, rely=0.03, relwidth=0.8, relheight=0.1)
 
 Radiobutton(gui, text='组队_御魂/觉醒', value=1, variable=mode, borderwidth=4, indicatoron=0, \
-height=2, width=7, bg='grey').place(relx=0.2, rely=0.15, relwidth=0.43, relheight=0.1)
-Checkbutton(gui, text='满员', variable=if_full,).place(\
+font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.15, relwidth=0.43, relheight=0.1)
+Checkbutton(gui, text='满员', variable=if_full, font='幼圆 -13').place(\
 relx=0.63, rely=0.15, relwidth=0.17, relheight=0.1)
 
 Radiobutton(gui, text='组队_探索', value=2, variable=mode, borderwidth=4, indicatoron=0, \
-height=2, width=7, bg='grey').place(relx=0.2, rely=0.25, relwidth=0.6, relheight=0.1)
+font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.25, relwidth=0.6, relheight=0.1)
 
-Radiobutton(gui, text='单_御/觉/斗鸡', value=3, variable=mode, borderwidth=4, indicatoron=0, \
-height=2, width=7, bg='grey').place(relx=0.2, rely=0.35, relwidth=0.6, relheight=0.1)
+Radiobutton(gui, text='单刷_御/觉/斗鸡', value=3, variable=mode, borderwidth=4, indicatoron=0, \
+font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.35, relwidth=0.6, relheight=0.1)
 
 Radiobutton(gui, text='单刷_探索', value=4, variable=mode, borderwidth=4, indicatoron=0, \
-height=2, width=7, bg='grey').place(relx=0.2, rely=0.45, relwidth=0.6, relheight=0.1)
+font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.45, relwidth=0.6, relheight=0.1)
 
 combo = ttk.Combobox(gui, textvariable=mob, font='幼圆 -13')  
-combo["values"] = ('日和坊','海坊主', '鬼使黑', '跳跳哥哥', '小松丸', '二口女')  
+combo["values"] = ('日和坊','海坊主', '鬼使黑', '跳跳哥哥', '小松丸', '二口女', '以上全部')
 combo["state"] = "readonly" 
 combo.current(0)
 combo.place(relx=0.2, rely=0.55, relwidth=0.31, relheight=0.1)
 
 Radiobutton(gui, text='妖气封印', value=5, variable=mode, borderwidth=4, indicatoron=0, \
-height=2, width=7, bg='grey').place(relx=0.51, rely=0.55, relwidth=0.29, relheight=0.1)
+font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.51, rely=0.55, relwidth=0.29, relheight=0.1)
 
 Radiobutton(gui, text='[暂停]', value=256, variable=mode, borderwidth=7, indicatoron=0, \
-height=2, width=7, bg='grey').place(relx=0.2, rely=0.66, relwidth=0.6, relheight=0.1)
+font='幼圆 -16', height=2, width=7, bg='grey').place(relx=0.2, rely=0.66, relwidth=0.6, relheight=0.1)
 
 shutd = ttk.Combobox(gui, textvariable=shut_time, font='幼圆 -14')  
-shutd["values"] = ('半小时后','一小时后', '两小时后', '三小时后', '四小时后')  
+shutd["values"] = ('半小时后','一小时后', '两小时后', '三小时后', '四小时后', '六小时后')  
 shutd["state"] = "readonly" 
 shutd.current(0)
 shutd.place(relx=0.2, rely=0.78, relwidth=0.31, relheight=0.08)
-Button(gui, text='关机', borderwidth=3, bg='#8B636C', command=poweroff).place(relx=0.51, rely=0.78, relwidth=0.15, relheight=0.08)
-Button(gui, text='取消', borderwidth=3, command=cancel).place(relx=0.67, rely=0.78, relwidth=0.13, relheight=0.08)
+Button(gui, text='关机', borderwidth=3, bg='#8B636C', command=poweroff, font='幼圆 -14'\
+).place(relx=0.51, rely=0.78, relwidth=0.15, relheight=0.08)
+Button(gui, text='取消', borderwidth=3, command=cancel, font='幼圆 -14'\
+).place(relx=0.67, rely=0.78, relwidth=0.13, relheight=0.08)
 
 Label(gui, text="-- developed by iclosed  ", \
 height=2, width=22, fg="blue").place(relx=0.3, rely=0.9, relwidth=0.7, relheight=0.07)
