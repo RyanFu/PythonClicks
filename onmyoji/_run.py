@@ -14,7 +14,7 @@ from Tkinter import *
 from tkinter import ttk 
 
 gui = Tk()
-gui.title('阴阳师脚本-2.1')
+gui.title('阴阳师脚本-2.2')
 gui.geometry('250x450')
 gui.iconbitmap('images/ssr.ico')
 mode = IntVar()
@@ -149,51 +149,47 @@ def threadscan():
             im_find_click(im_all, 0.8, '“所有人”')
             im_find_click(im_default, 0.8, '“默认邀请队友”')
             im_find_click(im_begin, 0.8, '“开始战斗”')
-            im_find_click(im_prepare, 0.80, '“准备”')
-            im_find_click(im_continue, 0.60, '“点击屏幕继续”')
-            im_find_click(im_tick, 0.8, '“继续”')
+            im_find_click(im_prepare, 0.9, '“准备”')
+            im_find_click(im_continue, 0.7, '“点击屏幕继续”')
+            im_find_click(im_tick, 0.9, '“同意继续”')
             im_find_click(im_confirm, 0.8, '“确定”')
             im_find_click(im_create, 0.8, '“创建”')
             im_find_click(im_accept, 0.9, '“接受”')
             
         elif mode.get() == 2:
             lab.config(text="扫描中...")
-            im_find_click(im_prepare, 0.6, '“准备”')
+            im_find_click(im_prepare, 0.9, '“准备”')
             im_find_click(im_continue, 0.6, '“点击屏幕继续”')
             im_find_click(im_team, 0.7, '“组队”')
             im_find_click(im_hard, 0.8, '“困难章节”')
-            im_find_click(im_boss, 0.6, '“头目”')
-            im_find_click(im_tick, 0.8, '“继续”')
+            im_find_click(im_boss, 0.9, '“头目”')
+            im_find_click(im_tick, 0.9, '“同意继续”')
             im_find_click(im_accept, 0.9, '“接受”')
-            if im_find_click(im_chest, 0.8, '“宝箱”'):
-                time.sleep(3)
-                mouse_left_click_return(get_pos(_title)[0] + 100, get_pos(_title)[1] + 100)
-            if not im_find_click(im_kill, 0.6, '“小怪”'):
-                mouse_left_click_return(get_pos(_title)[0] + 820, get_pos(_title)[1] + 370)
+            im_find_click(im_chest, 0.8, '“宝箱”')
+            if not im_find_click(im_kill, 0.9, '“小怪”'):
+                mouse_left_click_return(get_pos(_title)[0] + 820, get_pos(_title)[1] + 500)
         
         elif mode.get() == 3:
             lab.config(text="扫描中...")
-            im_find_click(im_prepare, 0.7, '“准备”')
+            im_find_click(im_prepare, 0.9, '“准备”')
             im_find_click(im_continue, 0.7, '“点击屏幕继续”')
             im_find_click(im_challenge, 0.7, '“挑战”')
-            im_find_click(im_fight, 0.7, '“战”')
+            im_find_click(im_fight, 0.8, '“战”')
             im_find_click(im_manual, 0.7, '“手动->自动”')
             im_find_click(im_attack, 0.7, '“进攻”')
             im_find_click(im_accept, 0.9, '“接受”')
         
         elif mode.get() == 4:
             lab.config(text="扫描中...")
-            im_find_click(im_prepare, 0.7, '“准备”')
+            im_find_click(im_prepare, 0.9, '“准备”')
             im_find_click(im_continue, 0.7, '“点击屏幕继续”')
             im_find_click(im_adventure, 0.7, '“探索”')
             im_find_click(im_hard, 0.8, '“困难章节”')
-            im_find_click(im_boss, 0.6, '“头目”')
+            im_find_click(im_boss, 0.9, '“头目”')
             im_find_click(im_accept, 0.9, '“接受”')
-            if im_find_click(im_chest, 0.8, '“宝箱”'):
-                time.sleep(3)
-                mouse_left_click_return(get_pos(_title)[0] + 100, get_pos(_title)[1] + 100)
-            if not im_find_click(im_kill, 0.6, '“小怪”'):
-                mouse_left_click_return(get_pos(_title)[0] + 820, get_pos(_title)[1] + 370)
+            im_find_click(im_chest, 0.8, '“宝箱”')
+            if not im_find_click(im_kill, 0.9, '“小怪”'):
+                mouse_left_click_return(get_pos(_title)[0] + 820, get_pos(_title)[1] + 500)
         
         elif mode.get() == 5:
             lab.config(text="扫描中...")
@@ -216,9 +212,9 @@ def threadscan():
                 im_find_click_offset(im_tiaotiao, 0.7, '“跳跳哥哥”', 415, 10)
                 im_find_click_offset(im_songwan, 0.7, '“小松丸”', 420, 10)
                 im_find_click_offset(im_erkou, 0.7, '“二口女”', 420, 10)
-            im_find_click(im_yaoqi, 0.8, u'“妖气封印”')
+            im_find_click(im_yaoqi, 0.9, u'“妖气封印”')
             im_find_click(im_refresh, 0.7, '“刷新”')
-            im_find_click(im_prepare, 0.7, '“准备”')
+            im_find_click(im_prepare, 0.9, '“准备”')
             im_find_click(im_continue, 0.7, '“点击屏幕继续”')  
             if im_find_click(im_hall2team, 0.7, '“组队大厅”'):
                 time.sleep(0.7)
