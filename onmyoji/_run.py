@@ -8,13 +8,14 @@ import random
 import thread
 import time
 import win32api
+import socket
 from getHandle import *
 from mouseCtrl import *
 from Tkinter import *
 from tkinter import ttk 
 
 gui = Tk()
-gui.title('阴阳师脚本-2.2')
+gui.title('阴阳师脚本-2.5')
 gui.geometry('250x450')
 gui.iconbitmap('images/ssr.ico')
 mode = IntVar()
@@ -55,6 +56,7 @@ im_yaoqi = cv2.imread('images/yaoqi.png')
 
 
 def poweroff():
+    send_msg('$delay_shutdown')
     if shut_time.get()==u'半小时后':
         os.popen('shutdown -s -t 1800')
     elif shut_time.get()==u'一小时后':
@@ -67,10 +69,41 @@ def poweroff():
         os.popen('shutdown -s -t 14400')
     elif shut_time.get()==u'六小时后':
         os.popen('shutdown -s -t 21600')
+        
+
 def cancel():
+    send_msg('$shutdown_cancel')
     os.popen('shutdown -a')
 
 
+def send_msg(str):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.sendto(str, ('193.112.10.74', 31189))
+    s.close()    
+    
+    
+def tellme():
+    if mode.get() == 1:
+        send_msg('$组队_御魂/觉醒')
+    elif mode.get() == 2:
+        send_msg('$组队_探索')
+    elif mode.get() == 3:
+        send_msg('$单刷_御/觉/斗鸡')
+    elif mode.get() == 4:
+        send_msg('$单刷_探索')  
+    elif mode.get() == 5:
+        if mob.get()==u'日和坊':
+            send_msg('$妖气封印_日和坊')
+        elif mob.get()==u'小松丸':
+            send_msg('$妖气封印_小松丸')
+        elif mob.get()==u'以上全部':
+            send_msg('$妖气封印ALL')
+        else:
+            send_msg('$妖气封印Others')
+    else:
+        send_msg('$暂停')
+        
+        
 def grab_screen():
     pos = get_pos(_title)
     bbox = (pos[0]+8, pos[1], pos[2]-8, pos[3]-8)
@@ -143,7 +176,7 @@ def threadscan():
             continue
         if mode.get() == 1:
             lab.config(text='扫描中...')
-            if im_find(im_invite, 0.65, '“邀请”'):
+            if im_find(im_invite, 0.9, '“邀请”'):
                 if if_full.get() == 1:
                     continue
             im_find_click(im_all, 0.8, '“所有人”')
@@ -212,17 +245,20 @@ def threadscan():
                 im_find_click_offset(im_tiaotiao, 0.7, '“跳跳哥哥”', 415, 10)
                 im_find_click_offset(im_songwan, 0.7, '“小松丸”', 420, 10)
                 im_find_click_offset(im_erkou, 0.7, '“二口女”', 420, 10)
-            im_find_click(im_yaoqi, 0.9, u'“妖气封印”')
             im_find_click(im_refresh, 0.7, '“刷新”')
             im_find_click(im_prepare, 0.9, '“准备”')
-            im_find_click(im_continue, 0.7, '“点击屏幕继续”')  
-            if im_find_click(im_hall2team, 0.7, '“组队大厅”'):
-                time.sleep(0.7)
-                mouse_drag(get_pos(_title)[0] + 200, get_pos(_title)[1] + 500, \
-                            get_pos(_title)[0] + 200, get_pos(_title)[1] + 400)
+            im_find_click(im_continue, 0.7, '“点击屏幕继续”')
+            if im_find(im_hall2team, 0.7, '“组队大厅”'):
+                time.sleep(2)
+                if im_find_click(im_hall2team, 0.7, '“组队大厅”'):
+                    time.sleep(random.uniform(0.7, 1.1))
+                    mouse_drag(get_pos(_title)[0] + 200, get_pos(_title)[1] + 500, \
+                                get_pos(_title)[0] + 200, get_pos(_title)[1] + 400)
+                    time.sleep(random.uniform(0.5, 0.6))
+                    im_find_click(im_yaoqi, 0.9, u'“妖气封印”')
             
         else:
-            lab.config(text="<暂停>")
+            lab.config(text="选择任一模式以开始..")
         time.sleep(random.uniform(0.5, 0.7))
 
         
@@ -230,18 +266,18 @@ def threadscan():
 lab = Label(gui, text="initializing...", font='幼圆 -14 bold', fg="brown")
 lab.place(relx=0.1, rely=0.03, relwidth=0.8, relheight=0.1)
 
-Radiobutton(gui, text='组队_御魂/觉醒', value=1, variable=mode, borderwidth=4, indicatoron=0, \
+Radiobutton(gui, text='组队_御魂/觉醒', value=1, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
 font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.15, relwidth=0.43, relheight=0.1)
 Checkbutton(gui, text='满员', variable=if_full, font='幼圆 -13').place(\
 relx=0.63, rely=0.15, relwidth=0.17, relheight=0.1)
 
-Radiobutton(gui, text='组队_探索', value=2, variable=mode, borderwidth=4, indicatoron=0, \
+Radiobutton(gui, text='组队_探索', value=2, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
 font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.25, relwidth=0.6, relheight=0.1)
 
-Radiobutton(gui, text='单刷_御/觉/斗鸡', value=3, variable=mode, borderwidth=4, indicatoron=0, \
+Radiobutton(gui, text='单刷_御/觉/斗鸡', value=3, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
 font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.35, relwidth=0.6, relheight=0.1)
 
-Radiobutton(gui, text='单刷_探索', value=4, variable=mode, borderwidth=4, indicatoron=0, \
+Radiobutton(gui, text='单刷_探索', value=4, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
 font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.45, relwidth=0.6, relheight=0.1)
 
 combo = ttk.Combobox(gui, textvariable=mob, font='幼圆 -13')  
@@ -250,10 +286,10 @@ combo["state"] = "readonly"
 combo.current(0)
 combo.place(relx=0.2, rely=0.55, relwidth=0.31, relheight=0.1)
 
-Radiobutton(gui, text='妖气封印', value=5, variable=mode, borderwidth=4, indicatoron=0, \
+Radiobutton(gui, text='妖气封印', value=5, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
 font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.51, rely=0.55, relwidth=0.29, relheight=0.1)
 
-Radiobutton(gui, text='[暂停]', value=256, variable=mode, borderwidth=7, indicatoron=0, \
+Radiobutton(gui, text='[暂停]', value=256, variable=mode, borderwidth=7, indicatoron=0, command=tellme, \
 font='幼圆 -16', height=2, width=7, bg='grey').place(relx=0.2, rely=0.66, relwidth=0.6, relheight=0.1)
 
 shutd = ttk.Combobox(gui, textvariable=shut_time, font='幼圆 -14')  

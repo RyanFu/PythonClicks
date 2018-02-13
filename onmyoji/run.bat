@@ -5,6 +5,6 @@
 E:
 cd GitHub\Local_Projects\Python_Clicks\onmyoji
 
-python _run.py
+pythonw _run.py
 
 pause
