@@ -1,7 +1,8 @@
-# coding=utf-8
+﻿# coding=utf-8
 import win32gui
 import win32con
 import time
+import ctypes
 
 
 def utf8_gbk(s):
@@ -33,10 +34,17 @@ def get_pos(s):
     return left, top, right, bottom
 
 
-_text = "阴阳师-网易游戏"
-
-#set_front(_text)
-#time.sleep(2)
-#set_back(_text)
+def isIconic(s):
+    h = get_handle(s)
+    return win32gui.IsIconic(h)
 
 
+def window_size(s):
+    
+    h = get_handle(s)
+    left, right, top, bottom = get_pos(s)
+    win32gui.SetWindowPos(h, None, left, top,right-left, bottom-top, win32con.SWP_NOSENDCHANGING|win32con.SWP_SHOWWINDOW)
+
+
+#_text = "任务管理器"
+#window_size(_text)

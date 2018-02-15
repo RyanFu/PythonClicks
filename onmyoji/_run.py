@@ -1,28 +1,25 @@
 # encoding=utf-8
 import aircv as ac
+import ctypes
 import cv2
 import ImageGrab
 import numpy
 import os
 import random
+import socket
+import sys
 import thread
 import time
 import win32api
-import socket
 from getHandle import *
 from mouseCtrl import *
 from Tkinter import *
 from tkinter import ttk 
 
-gui = Tk()
-gui.title('阴阳师脚本-2.5')
-gui.geometry('250x450')
-gui.iconbitmap('images/ssr.ico')
-mode = IntVar()
-if_full = IntVar()
-mob = StringVar()
-shut_time = StringVar()
+reload(sys)
+sys.setdefaultencoding('utf-8')
 _title = '阴阳师-网易游戏'
+_guiTitle = '阴阳师脚本-3.0'
 
 im_accept = cv2.imread('images/accept.png')
 im_adventure = cv2.imread('images/adventure.png')
@@ -56,7 +53,7 @@ im_yaoqi = cv2.imread('images/yaoqi.png')
 
 
 def poweroff():
-    send_msg('$delay_shutdown')
+    send_msg('$自动关机       ')
     if shut_time.get()==u'半小时后':
         os.popen('shutdown -s -t 1800')
     elif shut_time.get()==u'一小时后':
@@ -72,7 +69,7 @@ def poweroff():
         
 
 def cancel():
-    send_msg('$shutdown_cancel')
+    send_msg('$取消关机       ')
     os.popen('shutdown -a')
 
 
@@ -84,25 +81,52 @@ def send_msg(str):
     
 def tellme():
     if mode.get() == 1:
-        send_msg('$组队_御魂/觉醒')
+        send_msg('$组队_御魂/觉醒 ')
     elif mode.get() == 2:
-        send_msg('$组队_探索')
-    elif mode.get() == 3:
         send_msg('$单刷_御/觉/斗鸡')
+    elif mode.get() == 3:
+        send_msg('$组队_探索      ')
     elif mode.get() == 4:
-        send_msg('$单刷_探索')  
+        send_msg('$单刷_探索      ')  
     elif mode.get() == 5:
         if mob.get()==u'日和坊':
             send_msg('$妖气封印_日和坊')
         elif mob.get()==u'小松丸':
             send_msg('$妖气封印_小松丸')
         elif mob.get()==u'以上全部':
-            send_msg('$妖气封印ALL')
+            send_msg('$妖气封印ALL    ')
         else:
-            send_msg('$妖气封印Others')
+            send_msg('$妖气封印Others ')
     else:
-        send_msg('$暂停')
-        
+        send_msg('$暂停           ')
+
+
+def leavemsg():
+    global flag
+    if flag==0:
+        flag = 1
+        global newgui, text
+        newgui = Toplevel()
+        newgui.geometry('450x220')
+        newgui.title('您请说')
+        newgui.protocol('WM_DELETE_WINDOW', onexit)
+        Label(newgui, text='无法正常使用、有bug反馈或者什么功能需求都可以说哦', font='幼圆 -15' \
+        ).place(relx=0.1, rely=0.1, relwidth=0.8, relheight=0.08)
+        text = Text(newgui, font='幼圆 -17')
+        text.place(relx=0.1, rely=0.26, relwidth=0.8, relheight=0.4)
+        Button(newgui, text='提交', borderwidth=2, bg='#cccccc', command=leavemsg, font='幼圆 -13'\
+        ).place(relx=0.55, rely=0.75, relwidth=0.35, relheight=0.16)
+    elif flag==1:
+        flag = 0
+        send_msg('%'+text.get('0.0', 'end'))
+        newgui.destroy()
+
+
+def onexit():
+    global flag
+    flag = 0
+    newgui.destroy()
+    
         
 def grab_screen():
     pos = get_pos(_title)
@@ -113,7 +137,7 @@ def grab_screen():
 
 
 def im_find(_img, confidence, _str):
-    if get_pos(_title)[0]<0 and get_pos(_title)[1]<0 and get_pos(_title)[2]<0 and get_pos(_title)[3]<0:
+    if isIconic(_title):
         lab.config(text='窗口被最小化,无法扫描!')
         return
     _imsrc = grab_screen()
@@ -130,7 +154,7 @@ def im_find(_img, confidence, _str):
 
 
 def im_find_click(_img, confidence, _str):
-    if get_pos(_title)[0]<0 and get_pos(_title)[1]<0 and get_pos(_title)[2]<0 and get_pos(_title)[3]<0:
+    if isIconic(_title):
         lab.config(text='窗口被最小化,无法扫描!')
         return
     _imsrc = grab_screen()
@@ -150,7 +174,7 @@ def im_find_click(_img, confidence, _str):
 
 
 def im_find_click_offset(_img, confidence, _str, x, y):
-    if get_pos(_title)[0]<0 and get_pos(_title)[1]<0 and get_pos(_title)[2]<0 and get_pos(_title)[3]<0:
+    if isIconic(_title):
         lab.config(text='窗口被最小化,无法扫描!')
         return
     _imsrc = grab_screen()
@@ -173,6 +197,7 @@ def threadscan():
     while(1):
         if get_handle(_title) == 0:
             lab.config(text='请打开阴阳师电脑客户端!')
+            time.sleep(1)
             continue
         if mode.get() == 1:
             lab.config(text='扫描中...')
@@ -187,22 +212,9 @@ def threadscan():
             im_find_click(im_tick, 0.9, '“同意继续”')
             im_find_click(im_confirm, 0.8, '“确定”')
             im_find_click(im_create, 0.8, '“创建”')
-            im_find_click(im_accept, 0.9, '“接受”')
+            im_find_click(im_accept, 0.9, '“悬赏接受”')
             
         elif mode.get() == 2:
-            lab.config(text="扫描中...")
-            im_find_click(im_prepare, 0.9, '“准备”')
-            im_find_click(im_continue, 0.6, '“点击屏幕继续”')
-            im_find_click(im_team, 0.7, '“组队”')
-            im_find_click(im_hard, 0.8, '“困难章节”')
-            im_find_click(im_boss, 0.9, '“头目”')
-            im_find_click(im_tick, 0.9, '“同意继续”')
-            im_find_click(im_accept, 0.9, '“接受”')
-            im_find_click(im_chest, 0.8, '“宝箱”')
-            if not im_find_click(im_kill, 0.9, '“小怪”'):
-                mouse_left_click_return(get_pos(_title)[0] + 820, get_pos(_title)[1] + 500)
-        
-        elif mode.get() == 3:
             lab.config(text="扫描中...")
             im_find_click(im_prepare, 0.9, '“准备”')
             im_find_click(im_continue, 0.7, '“点击屏幕继续”')
@@ -210,19 +222,34 @@ def threadscan():
             im_find_click(im_fight, 0.8, '“战”')
             im_find_click(im_manual, 0.7, '“手动->自动”')
             im_find_click(im_attack, 0.7, '“进攻”')
-            im_find_click(im_accept, 0.9, '“接受”')
-        
+            im_find_click(im_accept, 0.9, '“悬赏接受”')
+
+        elif mode.get() == 3:
+            lab.config(text="扫描中...")
+            im_find_click(im_prepare, 0.9, '“准备”')
+            im_find_click(im_continue, 0.6, '“点击屏幕继续”')
+            im_find_click(im_team, 0.7, '“组队”')
+            im_find_click(im_hard, 0.8, '“二十五章”')
+            im_find_click(im_boss, 0.9, '“头目”')
+            im_find_click(im_tick, 0.9, '“同意继续”')
+            im_find_click(im_accept, 0.9, '“悬赏接受”')
+            im_find_click(im_chest, 0.8, '“宝箱”')
+            if not im_find_click(im_kill, 0.9, '“小怪”'):
+                mouse_left_click_return(get_pos(_title)[0] + 820, get_pos(_title)[1] + 500)
+                time.sleep(random.uniform(0.3, 0.4))
+
         elif mode.get() == 4:
             lab.config(text="扫描中...")
             im_find_click(im_prepare, 0.9, '“准备”')
             im_find_click(im_continue, 0.7, '“点击屏幕继续”')
             im_find_click(im_adventure, 0.7, '“探索”')
-            im_find_click(im_hard, 0.8, '“困难章节”')
+            im_find_click(im_hard, 0.8, '“二十五章”')
             im_find_click(im_boss, 0.9, '“头目”')
-            im_find_click(im_accept, 0.9, '“接受”')
+            im_find_click(im_accept, 0.9, '“悬赏接受”')
             im_find_click(im_chest, 0.8, '“宝箱”')
             if not im_find_click(im_kill, 0.9, '“小怪”'):
                 mouse_left_click_return(get_pos(_title)[0] + 820, get_pos(_title)[1] + 500)
+                time.sleep(random.uniform(0.3, 0.4))
         
         elif mode.get() == 5:
             lab.config(text="扫描中...")
@@ -248,6 +275,7 @@ def threadscan():
             im_find_click(im_refresh, 0.7, '“刷新”')
             im_find_click(im_prepare, 0.9, '“准备”')
             im_find_click(im_continue, 0.7, '“点击屏幕继续”')
+            im_find_click(im_accept, 0.9, '“悬赏接受”')
             if im_find(im_hall2team, 0.7, '“组队大厅”'):
                 time.sleep(2)
                 if im_find_click(im_hall2team, 0.7, '“组队大厅”'):
@@ -262,48 +290,64 @@ def threadscan():
         time.sleep(random.uniform(0.5, 0.7))
 
         
-########################################################################
-lab = Label(gui, text="initializing...", font='幼圆 -14 bold', fg="brown")
-lab.place(relx=0.1, rely=0.03, relwidth=0.8, relheight=0.1)
+#########################################################################
+if ctypes.windll.shell32.IsUserAnAdmin():
+    flag = 0
+    gui = Tk()
+    gui.title(_guiTitle)
+    gui.geometry('256x450')
+    gui.iconbitmap('images/ssr.ico')
+    mode = IntVar()
+    if_full = IntVar()
+    mob = StringVar()
+    shut_time = StringVar()
+    lab = Label(gui, text="initializing...", font='幼圆 -14 bold', fg="brown")
+    lab.place(relx=0.1, rely=0.03, relwidth=0.8, relheight=0.1)
 
-Radiobutton(gui, text='组队_御魂/觉醒', value=1, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
-font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.15, relwidth=0.43, relheight=0.1)
-Checkbutton(gui, text='满员', variable=if_full, font='幼圆 -13').place(\
-relx=0.63, rely=0.15, relwidth=0.17, relheight=0.1)
+    Radiobutton(gui, text='组队_御魂/觉醒', value=1, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
+    font='幼圆 -14', height=2, width=7, bg='#cccccc', selectcolor='#87e7bb').place(relx=0.2, rely=0.15, relwidth=0.42, relheight=0.1)
+    Checkbutton(gui, text='满员', variable=if_full, font='幼圆 -13').place(\
+    relx=0.63, rely=0.15, relwidth=0.17, relheight=0.1)
+    
+    Radiobutton(gui, text='单刷各种本/斗技挂机', value=2, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
+    font='幼圆 -14', height=2, width=7, bg='#cccccc', selectcolor='#87e7bb').place(relx=0.2, rely=0.25, relwidth=0.6, relheight=0.1)
+  
+    Radiobutton(gui, text='组队_探索', value=3, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
+    font='幼圆 -14', height=2, width=7, bg='#cccccc', selectcolor='#87e7bb').place(relx=0.2, rely=0.35, relwidth=0.6, relheight=0.1)
 
-Radiobutton(gui, text='组队_探索', value=2, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
-font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.25, relwidth=0.6, relheight=0.1)
+    Radiobutton(gui, text='单刷_探索', value=4, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
+    font='幼圆 -14', height=2, width=7, bg='#cccccc', selectcolor='#87e7bb').place(relx=0.2, rely=0.45, relwidth=0.6, relheight=0.1)
 
-Radiobutton(gui, text='单刷_御/觉/斗鸡', value=3, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
-font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.35, relwidth=0.6, relheight=0.1)
+    combo = ttk.Combobox(gui, textvariable=mob, font='幼圆 -13')  
+    combo["values"] = ('日和坊','海坊主', '鬼使黑', '跳跳哥哥', '小松丸', '二口女', '以上全部')
+    combo["state"] = "readonly" 
+    combo.current(0)
+    combo.place(relx=0.2, rely=0.55, relwidth=0.31, relheight=0.1)
 
-Radiobutton(gui, text='单刷_探索', value=4, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
-font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.2, rely=0.45, relwidth=0.6, relheight=0.1)
+    Radiobutton(gui, text='妖气封印', value=5, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
+    font='幼圆 -14', height=2, width=7, bg='#cccccc', selectcolor='#87e7bb').place(relx=0.51, rely=0.55, relwidth=0.29, relheight=0.1)
 
-combo = ttk.Combobox(gui, textvariable=mob, font='幼圆 -13')  
-combo["values"] = ('日和坊','海坊主', '鬼使黑', '跳跳哥哥', '小松丸', '二口女', '以上全部')
-combo["state"] = "readonly" 
-combo.current(0)
-combo.place(relx=0.2, rely=0.55, relwidth=0.31, relheight=0.1)
+    Radiobutton(gui, text='[暂停]', value=256, variable=mode, borderwidth=5, indicatoron=0, command=tellme, \
+    font='幼圆 -16', height=2, width=7, bg='#cccccc', selectcolor='#e6b8af').place(relx=0.2, rely=0.66, relwidth=0.6, relheight=0.1)
 
-Radiobutton(gui, text='妖气封印', value=5, variable=mode, borderwidth=4, indicatoron=0, command=tellme, \
-font='幼圆 -14', height=2, width=7, bg='grey').place(relx=0.51, rely=0.55, relwidth=0.29, relheight=0.1)
+    shutd = ttk.Combobox(gui, textvariable=shut_time, font='幼圆 -14')  
+    shutd["values"] = ('半小时后','一小时后', '两小时后', '三小时后', '四小时后', '六小时后')  
+    shutd["state"] = "readonly" 
+    shutd.current(0)
+    shutd.place(relx=0.2, rely=0.78, relwidth=0.31, relheight=0.08)
+    Button(gui, text='关机', borderwidth=3, bg='#c27ba0', command=poweroff, font='幼圆 -14'\
+    ).place(relx=0.51, rely=0.78, relwidth=0.15, relheight=0.08)
+    Button(gui, text='取消', borderwidth=3, bg='#cccccc', command=cancel, font='幼圆 -14'\
+    ).place(relx=0.66, rely=0.78, relwidth=0.14, relheight=0.08)
 
-Radiobutton(gui, text='[暂停]', value=256, variable=mode, borderwidth=7, indicatoron=0, command=tellme, \
-font='幼圆 -16', height=2, width=7, bg='grey').place(relx=0.2, rely=0.66, relwidth=0.6, relheight=0.1)
+    Label(gui, text="-- developed by iclosed  ", \
+    height=2, width=22, fg="blue").place(relx=0.3, rely=0.88, relwidth=0.7, relheight=0.07)
 
-shutd = ttk.Combobox(gui, textvariable=shut_time, font='幼圆 -14')  
-shutd["values"] = ('半小时后','一小时后', '两小时后', '三小时后', '四小时后', '六小时后')  
-shutd["state"] = "readonly" 
-shutd.current(0)
-shutd.place(relx=0.2, rely=0.78, relwidth=0.31, relheight=0.08)
-Button(gui, text='关机', borderwidth=3, bg='#8B636C', command=poweroff, font='幼圆 -14'\
-).place(relx=0.51, rely=0.78, relwidth=0.15, relheight=0.08)
-Button(gui, text='取消', borderwidth=3, command=cancel, font='幼圆 -14'\
-).place(relx=0.67, rely=0.78, relwidth=0.13, relheight=0.08)
+    Button(gui, text='给我留言', borderwidth=2, bg='#cccccc', command=leavemsg, font='幼圆 -12'\
+    ).place(relx=0.7, rely=0.94, relwidth=0.26, relheight=0.05)
+    thread.start_new_thread(threadscan, ())
+    mainloop()
+else:
+    #print 'I\'m getting uac ...'
+    ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 0)
 
-Label(gui, text="-- developed by iclosed  ", \
-height=2, width=22, fg="blue").place(relx=0.3, rely=0.9, relwidth=0.7, relheight=0.07)
-
-thread.start_new_thread(threadscan, ())
-mainloop()
