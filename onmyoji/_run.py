@@ -15,6 +15,7 @@ from getHandle import *
 from mouseCtrl import *
 from Tkinter import *
 from tkinter import ttk 
+import tkinter.messagebox
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -110,7 +111,7 @@ def leavemsg():
         newgui.geometry('450x220')
         newgui.title('您请说')
         newgui.protocol('WM_DELETE_WINDOW', onexit)
-        Label(newgui, text='无法正常使用、有bug反馈或者什么功能需求都可以说哦', font='幼圆 -15' \
+        Label(newgui, text='无法正常使用、有bug反馈或者什么功能需求都可以说哦', font='幼圆 -13' \
         ).place(relx=0.1, rely=0.1, relwidth=0.8, relheight=0.08)
         text = Text(newgui, font='幼圆 -17')
         text.place(relx=0.1, rely=0.26, relwidth=0.8, relheight=0.4)
@@ -118,6 +119,8 @@ def leavemsg():
         ).place(relx=0.55, rely=0.75, relwidth=0.35, relheight=0.16)
     elif flag==1:
         flag = 0
+        #tkinter.messagebox.showinfo('\(^o^)/','已成功传达，我有空会看到的。')
+        tkinter.messagebox.showinfo('\(^o^)/','已成功传达，我有空会看到的。')
         send_msg('%'+text.get('0.0', 'end'))
         newgui.destroy()
 
@@ -349,5 +352,6 @@ if ctypes.windll.shell32.IsUserAnAdmin():
     mainloop()
 else:
     #print 'I\'m getting uac ...'
-    ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 0)
+    #print sys.executable, __file__
+    ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable, 'gbk'), unicode(__file__, 'gbk'), None, 0)
 
