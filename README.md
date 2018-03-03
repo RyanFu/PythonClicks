@@ -24,7 +24,7 @@
 调试source_code/img_process/下的*img_find_aircv.py*使之可以正常运行
 
 ### 0x02 具体实现
-结合前三段程序可以轻松的进行游戏中图像的查询和点击，具体一个实现例子见*阴阳师脚本/main.py*
+结合前三段程序可以轻松的进行游戏中图像的查询和点击，具体一个实现例子见 *onmyoji/_run.py*
 
 ### 0x03 关于管理员权限
 由于win10对安全做了很多改进，所以需要先进行管理员权限获取：
@@ -33,7 +33,11 @@
 
 这行代码用于打开一个管理员权限的shell，可以在后面继续添加执行代码。
 
-具体实现需要自己修改，可以参考*阴阳师脚本/start.bat*
+更新的方法：在程序中添加代码获取管理员权限:
+    
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+
+参考 source_code/getadmin.py
 
 ### 0x04 打包成exe执行
 安装pyinstaller
