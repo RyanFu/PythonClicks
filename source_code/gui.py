@@ -90,7 +90,7 @@ class MainGUI(ttk.Frame):
 		self.radio_2 = Radiobutton(self.root, text='单刷_探索', value=2, variable=self.mode, borderwidth=4,
 			indicatoron=0, command=self.change_mode, font='幼圆 -14', bg='#cccccc', selectcolor='#87e7bb')
 
-		self.radio_3 = Radiobutton(self.root, text='(待定功能)', value=3, variable=self.mode, borderwidth=4, state = 'disabled',
+		self.radio_3 = Radiobutton(self.root, text='<临时功能>海之旅探索', value=3, variable=self.mode, borderwidth=4, #state = 'disabled',
 			indicatoron=0, command=self.change_mode, font='幼圆 -14', bg='#cccccc', selectcolor='#87e7bb')
 
 		self.radio_4 = Radiobutton(self.root, text='妖气封印', value=4, variable=self.mode, borderwidth=4,

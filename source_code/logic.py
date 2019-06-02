@@ -16,7 +16,7 @@ class logicThread(threading.Thread):
 		self.in_cycle = 255
 		self.cycle_func = {
 			0:self.general_assist,	1:self.team_instance, 2:self.single_adventure,
-			3:self.pause, 4:self.yaoqi, 5:self.pause, 255:self.pause,
+			3:self.temporary, 4:self.yaoqi, 255:self.pause,
 		}
 		self.init_modules()
 
@@ -126,3 +126,11 @@ class logicThread(threading.Thread):
 
 			self.mouse.click(pos)
 			return
+
+	def temporary(self):
+		for part_img in ['accept', 'prepare', 'continue', 'ji', 'tiaozhan', 'begin']:
+			pos = self.imp.find_img(part_img)
+			if not pos: continue
+			self.mouse.click(pos)
+			if part_img == 'ji':
+				time.sleep(4)
