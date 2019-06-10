@@ -19,6 +19,7 @@ signal_Q = queue.Queue()
 
 """GUI主线程，mainloop()之后阻塞"""
 mainFrame = tkinter.Tk()
+mainFrame.if_iconfy = False
 GUI = MainGUI(mainFrame, signal_Q)
 
 """逻辑线程，处理具体运行时逻辑"""
@@ -30,3 +31,4 @@ thread1.start()
 mainFrame.mainloop()
 thread1.terminate()
 # end
+

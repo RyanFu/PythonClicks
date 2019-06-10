@@ -85,7 +85,7 @@ class logicThread(threading.Thread):
 		os._exit(0)
 
 	def set_label(self, text):
-		if self.tkFrame and self.tkFrame.winfo_viewable():
+		if self.tkFrame and not self.tkFrame.if_iconfy:
 			self.gui_label['text'] = text
 
 	def dynamic_label(self, text_array):
@@ -93,7 +93,7 @@ class logicThread(threading.Thread):
 		self.tick_count += 1
 		if self.tick_count >= self.count_max:
 			self.tick_count = 0
-		print(self.tick_count)
+		# print(self.tick_count)
 		self.set_label(text_array[self.tick_count])
 
 	def check_hwnd(self):
@@ -107,7 +107,7 @@ class logicThread(threading.Thread):
 		self.set_label('暂停')
 
 	def general(self):
-		for part_img in ['continue', 'prepare', 'accept', 'tick', 'confirm', 'challenge']:
+		for part_img in ['点击屏幕继续', '准备', '接受组队邀请', '接受妖气封印', '确认', '挑战']:
 			pos = self.imp.find_img(part_img, 0.75)
 			if not pos: continue
 			self.mouse.click(pos)
@@ -115,10 +115,10 @@ class logicThread(threading.Thread):
 			break
 
 	def team_instance(self):
-		if self.imp.find_img('invite'):
+		if self.imp.find_img('邀请'):
 			if self.data['if_full'] == 1:
 				return
-		for part_img in ['all', 'begin', 'create']:
+		for part_img in ['组队选所有人', '开始战斗', '创建']:
 			pos = self.imp.find_img(part_img)
 			if not pos: continue
 			self.mouse.click(pos)
@@ -128,29 +128,31 @@ class logicThread(threading.Thread):
 		self.general()
 
 	def single_adventure(self):
-		for part_img in ['accept', 'adventure', 'prepare', 'continue', 'boss', 'kill', 'chest', 'hard28']:
+		if self.state != 'OutAdventure':
+			self.state = 'InAdventure'
+		for part_img in ['接受组队邀请', '探索', '准备', '点击屏幕继续', 'boss', '小怪', '宝箱', '第二十八章']:
 			pos = self.imp.find_img(part_img)
 			if not pos: continue
 			self.mouse.click(pos)
 			self.set_label(part_img)
 
-			if part_img=='adventure':
+			if part_img=='探索':
 				self.state = 'InAdventure'
 			if part_img=='boss':
 				self.state = 'OutAdventure'
-			if part_img=='chest':
+			if part_img=='宝箱':
 				self.set_label(part_img)
 				time.sleep(2)
 				self.mouse.click((820, 500))
 
 			return
 
-		if not self.imp.find_img('kill', 0.8) and self.state=='InAdventure':
-			self.set_label('click and moving...')
+		if not self.imp.find_img('小怪', 0.8) and self.state=='InAdventure':
+			self.set_label('点地板移动...')
 			self.mouse.click((820, 500))
 
 	def yaoqi(self):
-		for part_img in ['erkou', 'guishi', 'haifang', 'rihe', 'songwan', 'tiaotiao']:
+		for part_img in ['二口女', '鬼使黑', '海坊主', '日和坊', '小松丸', '跳跳哥哥']:
 			pos = self.imp.find_img(part_img)
 			if not pos: continue
 			join_pos = (pos[0]+420, pos[1]+10)
@@ -158,10 +160,10 @@ class logicThread(threading.Thread):
 			self.set_label(part_img)
 			return
 
-		for part_img in ['refresh', 'hall2team', 'prepare', 'continue', 'tick', ]:
+		for part_img in ['刷新', '组队大厅', '准备', '点击屏幕继续', '接受妖气封印', ]:
 			pos = self.imp.find_img(part_img)
 			if not pos: continue
-			if part_img == 'hall2team':
+			if part_img == '组队大厅':
 				self.mouse.click(pos)
 				time.sleep(1)
 				self.mouse.click((576, 350))
@@ -173,20 +175,20 @@ class logicThread(threading.Thread):
 
 	def field_break(self):
 		self.state = 'General'
-		if self.imp.find_img('self_defence', 0.95):
+		if self.imp.find_img('个人防守记录', 0.95):
 			self.state = 'SelfFieldBreak'
-		if self.imp.find_img('gang_record', 0.95):
+		if self.imp.find_img('寮突破记录', 0.95):
 			self.state = 'GangFieldBreak'
 
 		if self.state == 'SelfFieldBreak':
-			if self.imp.find_img('break_faild', 0.98):
+			if self.imp.find_img('突破失败', 0.98):
 				self.mouse.click((930, 480))
 				time.sleep(1.5)
 				self.mouse.click((675, 380))
 				return
 			for i in range(0, 9):
 				self.mouse.click(SelfFieldBreak_posDICT[i])
-				attack_pos = self.imp.find_img('attack')
+				attack_pos = self.imp.find_img('进攻')
 				if attack_pos:
 					self.mouse.click(attack_pos)
 					self.set_label('攻击第'+str(i)+'个结界')
@@ -197,7 +199,7 @@ class logicThread(threading.Thread):
 		if self.state == 'GangFieldBreak':
 			for i in range(0, 8):
 				self.mouse.click(GangFieldBreak_posDICT[i])
-				attack_pos = self.imp.find_img('attack')
+				attack_pos = self.imp.find_img('进攻')
 				if attack_pos:
 					self.mouse.click(attack_pos)
 					self.state = 'General'

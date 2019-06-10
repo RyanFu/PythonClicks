@@ -1,3 +1,5 @@
+# -*- coding:utf-8 -*-
+
 import os
 import cv2
 import aircv
@@ -23,7 +25,10 @@ class ImageProcess:
 			if file.split('.')[1] != 'png':
 				continue
 			tag = file.split('.')[0]
-			self.imgs[tag] = cv2.imread(res_path + file)
+			# self.imgs[tag] = cv2.imread(res_path + file)
+			self.imgs[tag] = cv2.imdecode(numpy.fromfile(res_path + file, dtype=numpy.uint8),-1)
+
+
 
 	def screen_shot(self):
 		hwndDC = win32gui.GetWindowDC(self.hwnd)
@@ -90,5 +95,6 @@ if __name__ == '__main__':
 	# ## win32gui.MoveWindow(hwnd, 384, 189, 1152, 679, True) ##
 	# ##########################################################
 	imp = ImageProcess(hwnd)
-	# print(imp.find_img('hall2team'))
+
+	print(imp.find_img('大厅'))
 

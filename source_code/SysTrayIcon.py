@@ -75,6 +75,7 @@ class SysTrayIcon(object):
 			win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, nid)
 			win32gui.PostQuitMessage(0)
 			if self.gui: self.gui.deiconify()
+			self.gui.if_iconfy = False
 		return True
 
 	def _add_ids_to_menu_options(self, menu_options):

@@ -17,7 +17,7 @@ class MainGUI(ttk.Frame):
 
 	def init_vars(self):
 		self.title = '痒痒鼠'
-		self.resizable = True
+		self.resizable = False
 		self.size = '255x333'
 		self.icon = 'resources/ssr.ico'
 		self.hover = 'I\'m hiding here'
@@ -34,6 +34,7 @@ class MainGUI(ttk.Frame):
 
 	def minimize(self):
 		self.root.withdraw()
+		self.root.if_iconfy = True
 		self.sysTrayIcon.show_icon()
 
 	def change_mode(self, *args):
