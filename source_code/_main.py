@@ -22,7 +22,9 @@ mainFrame = tkinter.Tk()
 GUI = MainGUI(mainFrame, signal_Q)
 
 """逻辑线程，处理具体运行时逻辑"""
-thread1 = logicThread(GUI, signal_Q)
+thread1 = logicThread(signal_Q)
+thread1.gui_label = GUI.lab
+thread1.tkFrame = mainFrame
 thread1.start()
 
 mainFrame.mainloop()

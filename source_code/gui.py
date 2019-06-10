@@ -17,8 +17,8 @@ class MainGUI(ttk.Frame):
 
 	def init_vars(self):
 		self.title = '痒痒鼠'
-		self.resizable = False
-		self.size = '288x400'
+		self.resizable = True
+		self.size = '255x333'
 		self.icon = 'resources/ssr.ico'
 		self.hover = 'I\'m hiding here'
 		self.mode = tkinter.IntVar(value=255)
@@ -46,13 +46,12 @@ class MainGUI(ttk.Frame):
 		self.signal_Q.put(signal)
 
 	def change_fullteam(self):
-		self.full_chk['text'] = '等待满员' if self.if_full.get()==1 else '不等满员'
+		self.full_chk['text'] = '等满员' if self.if_full.get()==1 else '不满员'
 		self.change_mode()
 
 	def shutdown(self):
 		self.shut_time['state'] = 'disable'
 		self.shut_btn['state'] = 'disable'
-		self.lab['text'] = '已计划关机'
 		signal = {
 			'type': 'ShutDown',
 			'shut_time': self.shut_time.get(),
@@ -81,7 +80,7 @@ class MainGUI(ttk.Frame):
 
 		self.hide_btn = Button(self.root, text='隐藏到托盘', bg='#c0d6e4', command=self.minimize, font='幼圆 -14')
 
-		self.radio_0 = Radiobutton(self.root, text='通用辅助(谁用谁知道)', value=0, variable=self.mode, borderwidth=4,
+		self.radio_0 = Radiobutton(self.root, text='通用(哪里要点点哪里)', value=0, variable=self.mode, borderwidth=4,
 			indicatoron=0, command=self.change_mode, font='幼圆 -14', bg='#cccccc', selectcolor='#87e7bb')
 
 		self.radio_1 = Radiobutton(self.root, text='组队刷本', value=1, variable=self.mode, borderwidth=4,
@@ -90,7 +89,7 @@ class MainGUI(ttk.Frame):
 		self.radio_2 = Radiobutton(self.root, text='单刷_探索', value=2, variable=self.mode, borderwidth=4,
 			indicatoron=0, command=self.change_mode, font='幼圆 -14', bg='#cccccc', selectcolor='#87e7bb')
 
-		self.radio_3 = Radiobutton(self.root, text='<临时功能>海之旅探索', value=3, variable=self.mode, borderwidth=4, #state = 'disabled',
+		self.radio_3 = Radiobutton(self.root, text='结界突破', value=3, variable=self.mode, borderwidth=4, #state = 'disabled',
 			indicatoron=0, command=self.change_mode, font='幼圆 -14', bg='#cccccc', selectcolor='#87e7bb')
 
 		self.radio_4 = Radiobutton(self.root, text='妖气封印', value=4, variable=self.mode, borderwidth=4,
@@ -99,7 +98,7 @@ class MainGUI(ttk.Frame):
 		self.radio_255 = Radiobutton(self.root, text='[暂停]', value=255, variable=self.mode, borderwidth=5,
 			indicatoron=0, command=self.change_mode, font='幼圆 -16', bg='#cccccc', selectcolor='#e6b8af')
 
-		self.full_chk = Checkbutton(self.root, text='等待满员', variable=self.if_full, borderwidth=2,
+		self.full_chk = Checkbutton(self.root, text='等满员', variable=self.if_full, borderwidth=2,
 			indicatoron=0, command=self.change_fullteam, font='幼圆 -13', bg='#c0d6e4', selectcolor='#ccd7ff')
 
 		self.mob_list = ttk.Combobox(self.root, textvariable=self.mob, font='幼圆 -13')

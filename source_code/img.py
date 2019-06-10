@@ -86,11 +86,9 @@ if __name__ == '__main__':
 
 	title = '阴阳师-网易游戏'
 	hwnd = win32gui.FindWindow(None, title)
-
 	# ##########################################################
 	# ## win32gui.MoveWindow(hwnd, 384, 189, 1152, 679, True) ##
 	# ##########################################################
-
 	imp = ImageProcess(hwnd)
 	# print(imp.find_img('hall2team'))
 
