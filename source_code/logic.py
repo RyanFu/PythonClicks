@@ -19,6 +19,7 @@ GangFieldBreak_posDICT = {
 	6: (12, 12), 7: (12, 12),
 }
 
+
 class logicThread(threading.Thread):
 	def __init__(self, signal_Q):
 		threading.Thread.__init__(self)

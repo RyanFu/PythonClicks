@@ -5,7 +5,7 @@ set name=_main
 
 rd /s /q dist
 
-pyinstaller -F -w %name%.py
+pyinstaller -F -w -i resources/ssr.ico %name%.py
 del /s /q /f %name%.spec
 rd /s /q build
 rd /s /q __pycache__
