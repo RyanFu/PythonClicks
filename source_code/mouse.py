@@ -40,7 +40,6 @@ if __name__ == '__main__':
 
 	title = '阴阳师-网易游戏'
 	hwnd = win32gui.FindWindow(None, title)
-
 	print(win32gui.IsIconic(hwnd))
 
 	mouse = Mouse(hwnd)

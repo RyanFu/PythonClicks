@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 import os
+import re
 import tkinter
 from SysTrayIcon import SysTrayIcon
-from tkinter import ttk, Button, Radiobutton, Label, Checkbutton
+from tooltip import CreateToolTip
+from tkinter import ttk, Button, Radiobutton, Label, Checkbutton, Entry
 
 
 class MainGUI(ttk.Frame):
@@ -11,9 +13,11 @@ class MainGUI(ttk.Frame):
 		self.signal_Q = signal_Q
 
 		# self.root.bind("<Unmap>", lambda event: self.minimize() if self.root.state() == 'iconic' else False)
+		self.register_functions()
 		self.init_vars()
 		self.init_gui()
 		self.init_layout()
+		self.init_tooltips()
 
 	def init_vars(self):
 		self.title = '痒痒鼠'
@@ -24,11 +28,17 @@ class MainGUI(ttk.Frame):
 		self.mode = tkinter.IntVar(value=255)
 		self.if_full = tkinter.IntVar(value=1)
 		self.mob = tkinter.StringVar()
-		self.shut_time = tkinter.StringVar()
+		self.shut_var = tkinter.StringVar()
 
 	def resize(self):
 		signal = {
 			'type': 'Resize'
+		}
+		self.signal_Q.put(signal)
+
+	def multi_open(self):
+		signal = {
+			'type': 'MultiOpen'
 		}
 		self.signal_Q.put(signal)
 
@@ -47,21 +57,25 @@ class MainGUI(ttk.Frame):
 		self.signal_Q.put(signal)
 
 	def change_fullteam(self):
-		self.full_chk['text'] = '等满员' if self.if_full.get()==1 else '不满员'
+		self.full_chk['text'] = '等满员' if self.if_full.get()==1 else '不等满员'
 		self.change_mode()
 
-	def shutdown(self):
+	def shutdown(self, *args):
+		if self.shut_var.get() == '':
+			self.shut_var.set('5')
 		self.shut_time['state'] = 'disable'
 		self.shut_btn['state'] = 'disable'
 		signal = {
 			'type': 'ShutDown',
 			'shut_time': self.shut_time.get(),
 		}
+		# print(signal)
 		self.signal_Q.put(signal)
 
 	def cancel_shut(self):
-		self.shut_time["state"] = "readonly"
+		self.shut_time['state'] = 'normal'
 		self.shut_btn['state'] = 'normal'
+		self.shut_time.selection_range(0, 9)
 		signal = {
 			'type': 'CancelShut',
 		}
@@ -77,9 +91,11 @@ class MainGUI(ttk.Frame):
 
 		self.lab = Label(self.root, text="初始化...", font='幼圆 -16', fg="brown")
 
-		self.resize = Button(self.root, text='游戏分辨率还原', bg='#c5c6ca', command=self.resize, font='幼圆 -12')
+		self.resize_btn = Button(self.root, text='还原分辨率', bg='#c0d6e4', command=self.resize, font='幼圆 -14')
 
-		self.hide_btn = Button(self.root, text='隐藏到托盘', bg='#c0d6e4', command=self.minimize, font='幼圆 -14')
+		self.multi_btn = Button(self.root, text='多开初始化', bg='#c0d6e4', command=self.multi_open, font='幼圆 -14')
+
+		self.hide_btn = Button(self.root, text='隐藏至托盘', bg='#c0d6e4', command=self.minimize, font='幼圆 -14')
 
 		self.radio_0 = Radiobutton(self.root, text='通用(哪里要点点哪里)', value=0, variable=self.mode, borderwidth=4,
 			indicatoron=0, command=self.change_mode, font='幼圆 -14', bg='#cccccc', selectcolor='#87e7bb')
@@ -108,10 +124,10 @@ class MainGUI(ttk.Frame):
 		self.mob_list["state"] = "readonly"
 		self.mob_list.current(0)
 
-		self.shut_time = ttk.Combobox(self.root, textvariable=self.shut_time, font='幼圆 -13')
-		self.shut_time["values"] = ('半小时后','一小时后', '两小时后', '三小时后', '四小时后', '六小时后')
-		self.shut_time["state"] = "readonly"
-		self.shut_time.current(0)
+		self.shut_time = Entry(self.root, textvariable=self.shut_var, validate='key', vcmd=(self.register_func[0],'%P'))
+		self.shut_time.bind('<Return>', self.shutdown)
+
+		self.shut_label = Label(self.root, text="分钟后", font='幼圆 -14')
 
 		self.shut_btn = Button(self.root, text='关机', borderwidth=3, bg='#fdc9d9', command=self.shutdown, font='幼圆 -14')
 		self.cacel_btn = Button(self.root, text='取消', borderwidth=3, bg='#cccccc', command=self.cancel_shut, font='幼圆 -14')
@@ -120,8 +136,9 @@ class MainGUI(ttk.Frame):
 
 	def init_layout(self):
 		self.lab.place(relx=0.15, rely=0.07, relwidth=0.75, relheight=0.1)
-		self.resize.place(relx=0.01, rely=0.01, relwidth=0.35, relheight=0.06)
-		self.hide_btn.place(relx=0.7, rely=0, relwidth=0.3, relheight=0.08)
+		self.resize_btn.place(relx=0.01, rely=0.01, relwidth=0.30, relheight=0.07)
+		self.multi_btn.place(relx=0.35, rely=0.01, relwidth=0.30, relheight=0.07)
+		self.hide_btn.place(relx=0.69, rely=0.01, relwidth=0.30, relheight=0.07)
 		self.radio_0.place(relx=0.2, rely=0.18, relwidth=0.6, relheight=0.1)
 		self.radio_1.place(relx=0.2, rely=0.3, relwidth=0.38, relheight=0.1)
 		self.full_chk.place(relx=0.58, rely=0.3, relwidth=0.22, relheight=0.1)
@@ -130,10 +147,28 @@ class MainGUI(ttk.Frame):
 		self.mob_list.place(relx=0.2, rely=0.6, relwidth=0.31, relheight=0.1)
 		self.radio_4.place(relx=0.51, rely=0.6, relwidth=0.29, relheight=0.1)
 		self.radio_255.place(relx=0.2, rely=0.71, relwidth=0.6, relheight=0.1)
-		self.shut_time.place(relx=0.2, rely=0.83, relwidth=0.31, relheight=0.08)
+		self.shut_time.place(relx=0.2, rely=0.83, relwidth=0.12, relheight=0.08)
+		self.shut_label.place(relx=0.33, rely=0.83, relwidth=0.16, relheight=0.08)
 		self.shut_btn.place(relx=0.51, rely=0.83, relwidth=0.15, relheight=0.08)
 		self.cacel_btn.place(relx=0.66, rely=0.83, relwidth=0.14, relheight=0.08)
 		self.author.place(relx=0.35, rely=0.93, relwidth=0.7, relheight=0.07)
+
+	def register_functions(self):
+		self.register_func = []
+		self.register_func.append(self.root.register(self.input_check_0))
+
+	def input_check_0(self, content):
+		"""Make sure input number is 1~999"""
+		pattern = r"[1-9]\d{0,2}$"
+		if re.match(pattern, content) or len(content)==0:
+			return True
+		else:
+			return False
+
+	def init_tooltips(self):
+		CreateToolTip(self.resize_btn, '改变了游戏窗口默认大小时使用，否则无法正确识别图片。')
+		CreateToolTip(self.multi_btn, '如果启动脚本之后打开了新的游戏窗口请点击这个按钮。')
+		CreateToolTip(self.hide_btn, '将脚本界面最小化到系统托盘。')
 
 if __name__ == '__main__':
 	import queue

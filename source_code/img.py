@@ -8,6 +8,13 @@ import win32con
 import win32gui
 from PIL import Image
 
+def draw_circle(imgsrc, positions, circle_radius, color, line_width):
+	for pos in positions:
+		circle_center_pos = (int(pos[0]), int(pos[1]))
+		cv2.circle(imgsrc, circle_center_pos, circle_radius, color, line_width)
+	cv2.imshow('show result', imgsrc)
+	cv2.waitKey(0)
+	cv2.destroyAllWindows()
 
 class ImageProcess:
 	def __init__(self, hwnd=0):
@@ -24,10 +31,8 @@ class ImageProcess:
 			if file.split('.')[1] != 'png':
 				continue
 			tag = file.split('.')[0]
-			# self.imgs[tag] = cv2.imread(res_path + file)
+			# self.imgs[tag] = cv2.imread(res_path + file)  # 无法处理中文路径
 			self.imgs[tag] = cv2.imdecode(numpy.fromfile(res_path + file, dtype=numpy.uint8),-1)
-
-
 
 	def screen_shot(self):
 		hwndDC = win32gui.GetWindowDC(self.hwnd)
@@ -60,12 +65,10 @@ class ImageProcess:
 		img = self.screen_shot()
 		img.save("screenshot.png")
 
-	def find_img(self, part_name, accuracy=0.8):
+	def find_img(self, part_name, accuracy=0.9):
 		if not self.hwnd or win32gui.IsIconic(self.hwnd):  # 窗口不存在或最小化
 			return None
 		img = self.screen_shot()
-		if not img:
-			return None
 		img_mat = cv2.cvtColor(numpy.asarray(img), cv2.COLOR_RGB2BGR)
 		match = aircv.find_template(img_mat, self.imgs[part_name])
 		if match is None:
@@ -76,6 +79,22 @@ class ImageProcess:
 		elif match['confidence'] >= accuracy:
 			print(part_name + ' is found, accuracy: ', match['confidence'])
 			return match['result']
+
+	def find_all_imgs(self, part_name, accuracy=0.9):
+		if not self.hwnd or win32gui.IsIconic(self.hwnd):  # 窗口不存在或最小化
+			return None
+		img = self.screen_shot()
+		img_mat = cv2.cvtColor(numpy.asarray(img), cv2.COLOR_RGB2BGR)
+		# img_mat = aircv.imread('screenshot.png')
+		matches = aircv.find_all_template(img_mat, self.imgs[part_name])
+		positions = []
+		for match in matches:
+			if match['confidence'] < accuracy:
+				continue
+			positions.append(match['result'])
+		# draw_circle(img_mat, positions, 60, (20, 200, 20), 3)
+
+		return positions
 
 
 if __name__ == '__main__':
@@ -95,5 +114,7 @@ if __name__ == '__main__':
 	# ##########################################################
 	imp = ImageProcess(hwnd)
 
-	print(imp.find_img('大厅'))
+	matches = imp.find_all_imgs('组队大厅')
+
+	print(matches)
 
