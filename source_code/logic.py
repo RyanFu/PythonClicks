@@ -126,7 +126,7 @@ class logicThread(threading.Thread):
 		self.set_label('暂停')
 
 	def general(self, win):
-		for part_img in ['点击屏幕继续', '准备', '接受组队邀请', '接受妖气封印', '确认', '挑战']:
+		for part_img in ['点击屏幕继续', '准备', '接受组队邀请', '接受妖气封印', '确认', '挑战', '活动单人']:
 			pos = win.find_img(part_img, 0.8)
 			if not pos: continue
 			win.click(pos)
@@ -134,12 +134,12 @@ class logicThread(threading.Thread):
 			break
 
 	def team_instance(self, win):
-		invites = win.find_all_imgs('邀请')
-		if len(invites) == 2:
-			return
-		if len(invites)==1 and self.data['if_full']==1:
-			return
-		for part_img in ['开始战斗', '创建']:
+		# invites = win.find_all_imgs('邀请')
+		# if len(invites) == 2:
+		# 	return
+		# if len(invites)==1 and self.data['if_full']==1:
+		# 	return
+		for part_img in ['组队挑战']:
 			pos = win.find_img(part_img)
 			if not pos: continue
 			win.click(pos)
@@ -181,51 +181,40 @@ class logicThread(threading.Thread):
 			self.set_label(part_img)
 			return
 
-		for part_img in ['刷新', '组队大厅', '准备', '点击屏幕继续', '接受妖气封印', ]:
+		for part_img in ['准备', '点击屏幕继续', '接受妖气封印', '组队大厅', '刷新', '开始战斗', '加入']:
 			pos = win.find_img(part_img)
 			if not pos: continue
-			if part_img == '组队大厅':
-				win.click(pos)
-				time.sleep(1)
-				win.click((576, 350))
-				self.state = 'MakeTeam'
-				return
 			win.click(pos)
 			self.set_label(part_img)
 			return
 
-	def field_break(self, win):
-		self.state = 'General'
-		if win.find_img('个人防守记录', 0.95):
-			self.state = 'SelfFieldBreak'
-		if win.find_img('寮突破记录', 0.95):
-			self.state = 'GangFieldBreak'
 
-		if self.state == 'SelfFieldBreak':
+	def field_break(self, win):
+		if win.find_img('个人防守记录', 0.95):
 			if win.find_img('突破失败', 0.8):
+				self.set_label('突破失败')
 				win.click((930, 480))
 				time.sleep(1.5)
 				win.click((675, 380))
 				return
 			for i in range(0, 9):
+				self.set_label('点击第'+str(i)+'个结界')
 				win.click(SelfFieldBreak_posDICT[i])
+				time.sleep(0.56)
 				attack_pos = win.find_img('进攻')
 				if attack_pos:
 					win.click(attack_pos)
 					self.set_label('攻击第'+str(i)+'个结界')
-					self.state = 'General'
 					break
-				time.sleep(0.3)
 
-		if self.state == 'GangFieldBreak':
+		elif win.find_img('寮突破记录', 0.95):
 			for i in range(0, 8):
 				win.click(GangFieldBreak_posDICT[i])
 				attack_pos = win.find_img('进攻')
 				if attack_pos:
 					win.click(attack_pos)
-					self.state = 'General'
 					break
 				time.sleep(0.3)
 
-		if self.state == 'General':
+		else:
 			self.general(win)
